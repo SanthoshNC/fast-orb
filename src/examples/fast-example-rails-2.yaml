@@ -1,0 +1,38 @@
+description: |
+  Example using Wallarm's FAST to run tests against simple Ruby on Rails application.
+  In this example parameter app_uri is used.
+  Taken from https://github.com/wallarm/fast-examples-rails.
+
+usage:
+  version: 2.1
+
+  orbs:
+    fast: wallarm/fast@dev:x.y.z
+
+  jobs:
+    build:
+      machine:
+        image: ubuntu-1604:201903-01
+
+      steps:
+        - checkout
+
+        - run:
+            name: Build docker
+            command: |
+              docker build -t app-test .
+        - run:
+            name: Run application
+            command: |
+              docker run -d --name app-test -p 3000:3000 app-test
+        # On this step we need to save ip-address of application
+        #    which is determined in 'bridge' docker network by deafult.
+        # To use env-variable between Circle CI steps we need to save it in $BASH_ENV.
+        - run:
+            name: Set application ip into env variable
+            command: |
+              echo "export APP_TEST_HOST=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' app-test)" >> $BASH_ENV
+
+        - fast/run_security_tests:
+            app_uri: http://$APP_TEST_HOST:3000
+            test_record_id: "<test_record_id>"

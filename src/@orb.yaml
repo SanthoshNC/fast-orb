@@ -1,0 +1,4 @@
+version: 2.1
+description: >
+  Run FAST with CI_MODE=testing. Run security specs based on previously recorded test record using test_record_id.
+  You can find source code of this orb on Github: https://github.com/wallarm/fast-orb
