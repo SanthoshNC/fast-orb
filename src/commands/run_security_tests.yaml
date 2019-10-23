@@ -5,21 +5,21 @@ parameters:
   test_record_id:
     type: string
     description: >
-      Test record id (can be given in Wallarm Cloud).
+      Test record id. You can find it at https://my.wallarm.com/testing/?status=all
 
   policy_id:
     type: string
     default: ""
     description: >
-      Policy id (can be given in Wallarm Cloud). With empty value test run will be use default policy.
+      Policy id. You can find it at https://my.wallarm.com/testing/policies/?check=all
+      With an empty value test run will be use the default policy.
 
   app_uri:
     type: string
     default: ""
     description: >
-      Application uri. Must be started with http or https and be visible for FAST docker container.
-      If not specified, app_port, app_protocol (has default value)
-      and get_internal_ip (has default value) parameters must be used instead. 
+      Application uri. Must be started with http or https and be visible for the FAST docker container.
+      If not specified, app_port, app_protocol and get_internal_ip parameters must be used instead. 
 
   app_protocol:
     type: string
@@ -50,7 +50,7 @@ parameters:
     type: string
     default: ""
     description: >
-      Description of Wallarm test run. Default value is name of related test record.
+      Description of Wallarm test run. Default value is the name of the related test record.
 
   test_run_rps:
     type: string
@@ -66,7 +66,7 @@ parameters:
 
   wallarm_api_host:
     type: string
-    default: api.wallarm.com
+    default: us1.api.wallarm.com
     description: >
       Wallarm API host.
 
