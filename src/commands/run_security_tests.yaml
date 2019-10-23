@@ -1,0 +1,104 @@
+description: >
+  Start FAST container in testing mode.
+
+parameters:
+  test_record_id:
+    type: string
+    description: >
+      Test record id. You can find it at https://my.wallarm.com/testing/?status=all
+
+  policy_id:
+    type: string
+    default: ""
+    description: >
+      Policy id. You can find it at https://my.wallarm.com/testing/policies/?check=all
+      With an empty value test run will be use the default policy.
+
+  app_uri:
+    type: string
+    default: ""
+    description: >
+      Application uri. Must be started with http or https and be visible for the FAST docker container.
+      If not specified, app_port, app_protocol and get_internal_ip parameters must be used instead. 
+
+  app_protocol:
+    type: string
+    default: http
+    description: >
+      Protocol which is used by your application. FAST works with http and https.
+
+  app_port:
+    type: string
+    default: "80"
+    description: >
+      Application port. Can be used when app_uri is not specified directly.
+
+
+  get_internal_ip:
+    type: string
+    default: hostname -i | grep -o -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | head -n1
+    description: >
+      Bash command to get internal ip address. Can be used when app_uri is not specified directly.
+
+  test_run_name:
+    type: string
+    default: ""
+    description: >
+      Name of Wallarm test run. Default value example: "TestRun Oct 22 13:08 UTC".
+
+  test_run_desc:
+    type: string
+    default: ""
+    description: >
+      Description of Wallarm test run. Default value is the name of the related test record.
+
+  test_run_rps:
+    type: string
+    default: ""
+    description: >
+      Maximum value of RPS (requests per second) for Wallarm test run. Unlimited by default.
+
+  stop_on_first_fail:
+    type: boolean
+    default: false
+    description: >
+      Stop Wallarm test run when first vulnerability is found.
+
+  wallarm_api_host:
+    type: string
+    default: us1.api.wallarm.com
+    description: >
+      Wallarm API host.
+
+  wallarm_fast_port:
+    type: string
+    default: "8080"
+    description: >
+      Wallarm FAST port.
+
+steps:
+  - run:
+      name: Setup fast.env file
+      command: |
+        echo WALLARM_API_TOKEN=$WALLARM_API_TOKEN \>> fast.env
+        echo WALLARM_API_HOST=<<parameters.wallarm_api_host>> \>> fast.env
+        echo CI_MODE=testing \>> fast.env
+        echo TEST_RECORD_ID=<<parameters.test_record_id>> \>> fast.env
+
+        if [ <<parameters.app_uri>> ]; then
+          echo TEST_RUN_URI=<<parameters.app_uri>> \>> fast.env
+        else
+          echo TEST_RUN_URI=<<parameters.app_protocol>>://$(<<parameters.get_internal_ip>>):<<parameters.app_port>> \>> fast.env
+        fi
+
+        if [ <<parameters.policy_id>> ] ; then echo "TEST_RUN_POLICY_ID=<<parameters.policy_id>>" \>> fast.env ; fi
+        if [ <<parameters.test_run_name>> ] ; then echo "TEST_RUN_NAME=<<parameters.test_run_name>>" \>> fast.env ; fi
+        if [ <<parameters.test_run_desc>> ] ; then echo "TEST_RUN_DESC=<<parameters.test_run_desc>>" \>> fast.env ; fi
+        if [ <<parameters.test_run_rps>> ] ; then echo "TEST_RUN_RPS=<<parameters.test_run_rps>>" \>> fast.env ; fi
+
+        <<# parameters.stop_on_first_fail >> echo "TEST_RUN_STOP_ON_FIRST_FAIL=<<parameters.stop_on_first_fail>>" \>> fast.env <</ parameters.stop_on_first_fail >>
+
+  - run: 
+      name: Run security tests.
+      command: |
+        docker run --name fast --env-file=fast.env -p <<parameters.wallarm_fast_port>>:8080 wallarm/fast
