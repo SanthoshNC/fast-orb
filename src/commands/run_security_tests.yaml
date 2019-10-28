@@ -14,31 +14,18 @@ parameters:
       Policy id. You can find it at https://my.wallarm.com/testing/policies/?check=all
       With an empty value test run will be use the default policy.
 
-  app_uri:
+  app_host:
     type: string
-    default: ""
+    default: $(hostname -i | grep -o -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | head -n1)
     description: >
-      Application uri. Must be started with http or https and be visible for the FAST docker container.
-      If not specified, app_port, app_protocol and get_internal_ip parameters must be used instead. 
-
-  app_protocol:
-    type: string
-    default: http
-    description: >
-      Protocol which is used by your application. FAST works with http and https.
+      Hostname of application without port. Defaults to internal ip.
+      Examples: 127.0.0.1 or example.com
 
   app_port:
     type: string
     default: "80"
     description: >
       Application port. Can be used when app_uri is not specified directly.
-
-
-  get_internal_ip:
-    type: string
-    default: hostname -i | grep -o -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | head -n1
-    description: >
-      Bash command to get internal ip address. Can be used when app_uri is not specified directly.
 
   test_run_name:
     type: string
@@ -84,12 +71,7 @@ steps:
         echo WALLARM_API_HOST=<<parameters.wallarm_api_host>> \>> fast.env
         echo CI_MODE=testing \>> fast.env
         echo TEST_RECORD_ID=<<parameters.test_record_id>> \>> fast.env
-
-        if [ <<parameters.app_uri>> ]; then
-          echo TEST_RUN_URI=<<parameters.app_uri>> \>> fast.env
-        else
-          echo TEST_RUN_URI=<<parameters.app_protocol>>://$(<<parameters.get_internal_ip>>):<<parameters.app_port>> \>> fast.env
-        fi
+        echo TEST_RUN_URI=http://<<parameters.app_host>>:<<parameters.app_port>> \>> fast.env
 
         if [ <<parameters.policy_id>> ] ; then echo "TEST_RUN_POLICY_ID=<<parameters.policy_id>>" \>> fast.env ; fi
         if [ <<parameters.test_run_name>> ] ; then echo "TEST_RUN_NAME=<<parameters.test_run_name>>" \>> fast.env ; fi
