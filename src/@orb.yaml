@@ -1,10 +1,12 @@
 version: 2.1
 description: >
-  Wallarm's Framework for Automated Security Testing (FAST) is a purpose-built tool that allows you to reveal vulnerabilities in web applications by generating and executing security tests automatically. 
+  Wallarm's Framework for Automated Security Testing (FAST) is a tool for automatically generating and running security tests. 
 
-  This orb allows to run FAST with CI_MODE=testing when security tests are based on an existing test record.
-  To start using this orb you have to setup WALLARM_API_TOKEN at your project's Enviroment Variables page.
-  You can find or create Wallarm API token (FAST node token) here: https://my.wallarm.com/nodes. 
+  This Orb allows to execute security tests based on the baselines that have been previously recorded. 
+  
+  To start using this Orb, you have to setup the WALLARM_API_TOKEN at your project's enviroment variables settings (you get the token at https://us1.my.wallarm.com/nodes).
 
-  Read more about FAST at https://docs.fast.wallarm.com/en/.
-  Source code of this orb at https://github.com/wallarm/fast-orb.
+  More on how to use FAST read here: https://docs.fast.wallarm.com/en/.
+  Orb's source code: https://github.com/wallarm/fast-orb.
+  FAST website: https://wallarm.com/products/fast.
+
