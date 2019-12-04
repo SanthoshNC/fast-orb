@@ -9,5 +9,5 @@ Wallarm's Framework for Automated Security Testing (FAST) is a purpose-built too
 
 To pack this orb use next command:
 ```sh
-circleci config pack src/ >> fast-orb.yaml
+circleci config pack src/ > fast-orb.yaml
 ```
