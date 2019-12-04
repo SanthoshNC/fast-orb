@@ -63,6 +63,12 @@ parameters:
     description: >
       Wallarm FAST port.
 
+  wallarm_version:
+    type: string
+    default: 'latest'
+    description: |
+      Wallarm FAST version
+
 steps:
   - run:
       name: Setup fast.env file
@@ -83,4 +89,4 @@ steps:
   - run: 
       name: Run security tests.
       command: |
-        docker run --name fast --env-file=fast.env -p <<parameters.wallarm_fast_port>>:8080 wallarm/fast
+        docker run --name fast --env-file=fast.env -p <<parameters.wallarm_fast_port>>:8080 wallarm/fast:<<parameters.wallarm_version>>

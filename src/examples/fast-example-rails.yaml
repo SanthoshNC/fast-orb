@@ -1,7 +1,7 @@
 description: |
   Example using Wallarm's FAST to run tests against simple Ruby on Rails application.
   In this example parameter app_port is used.
-  Taken from https://github.com/wallarm/fast-examples-rails.
+  Taken from https://github.com/wallarm/fast-example-rails.
 
 usage:
   version: 2.1
@@ -18,14 +18,9 @@ usage:
         - checkout
 
         - run:
-            name: Build docker
-            command: |
-              docker build -t app-test .
-
-        - run:
             name: Run application
             command: |
-              docker run -d --name app-test -p 3000:3000 app-test
+              docker run -d --name app-test -p 3000:3000 wallarm/fast-example-rails
 
         - fast/run_security_tests:
             app_port: "3000"
