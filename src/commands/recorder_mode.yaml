@@ -1,0 +1,62 @@
+description: >
+  Start FAST container in recording mode. It works like a forward proxy but also records all requests going through it
+
+parameters:
+  test_record_name:
+    type: string
+    default: ""
+    description: >
+      Name of Wallarm test record. Default value example: "TestRecord Oct 22 13:08 UTC"
+
+  inactivity_timeout:
+    type: string
+    default: "10"
+    description: >
+      Timeout since the last recorded request after which FAST container will be stopped
+
+  docker_network: 
+    type: string
+    description: >
+      Docker --network parameter. 
+      Read more at: https://docs.docker.com/engine/reference/commandline/run/#connect-a-container-to-a-network---network
+
+  docker_ip:
+    type: string
+    description: >
+      Docker --ip parameter. (IPv4)
+
+  wallarm_api_host:
+    type: string
+    default: us1.api.wallarm.com
+    description: >
+      Wallarm API host
+
+  wallarm_fast_port:
+    type: string
+    default: "8080"
+    description: >
+      Wallarm FAST port
+
+  wallarm_fast_version:
+    type: string
+    default: 'latest'
+    description: >
+      Wallarm FAST version
+
+steps:
+  - run:
+      name: Setup fast.env file
+      command: |
+        echo WALLARM_API_TOKEN=$WALLARM_API_TOKEN \>> fast.env
+        echo WALLARM_API_HOST=<<parameters.wallarm_api_host>> \>> fast.env
+        echo CI_MODE=recording \>> fast.env
+
+        if [ <<parameters.test_record_name>> ] ; then echo "TEST_RECORD_NAME=<<parameters.test_record_name>>" \>> fast.env ; fi
+        if [ <<parameters.inactivity_timeout>> ]; then echo "INACTIVITY_TIMEOUT=<<parameters.inactivity_timeout>>" \>> fast.env ; fi
+
+
+  - run:
+      name: Record requests
+      command: |
+        docker run --name fast-recording -d --net <<parameters.docker_network>> --ip <<parameters.docker_ip>> --env-file=fast.env -p <<parameters.wallarm_fast_port>>:8080 wallarm/fast:<<parameters.wallarm_fast_version>>
+        sleep 10

@@ -4,6 +4,7 @@ description: >
 parameters:
   test_record_id:
     type: string
+    default: ""
     description: >
       Test record id. You can find it at https://my.wallarm.com/testing/?status=all
 
@@ -59,14 +60,14 @@ parameters:
 
   wallarm_fast_port:
     type: string
-    default: "8080"
+    default: "8081"
     description: >
       Wallarm FAST port.
 
-  wallarm_version:
+  wallarm_fast_version:
     type: string
     default: 'latest'
-    description: |
+    description: >
       Wallarm FAST version
 
 steps:
@@ -76,9 +77,9 @@ steps:
         echo WALLARM_API_TOKEN=$WALLARM_API_TOKEN \>> fast.env
         echo WALLARM_API_HOST=<<parameters.wallarm_api_host>> \>> fast.env
         echo CI_MODE=testing \>> fast.env
-        echo TEST_RECORD_ID=<<parameters.test_record_id>> \>> fast.env
         echo TEST_RUN_URI=http://<<parameters.app_host>>:<<parameters.app_port>> \>> fast.env
 
+        if [ <<parameters.test_record_id>> ] ; then echo "TEST_RECORD_ID=<<parameters.test_record_id>>" \>> fast.env ; fi
         if [ <<parameters.policy_id>> ] ; then echo "TEST_RUN_POLICY_ID=<<parameters.policy_id>>" \>> fast.env ; fi
         if [ <<parameters.test_run_name>> ] ; then echo "TEST_RUN_NAME=<<parameters.test_run_name>>" \>> fast.env ; fi
         if [ <<parameters.test_run_desc>> ] ; then echo "TEST_RUN_DESC=<<parameters.test_run_desc>>" \>> fast.env ; fi
@@ -89,4 +90,4 @@ steps:
   - run: 
       name: Run security tests.
       command: |
-        docker run --name fast --env-file=fast.env -p <<parameters.wallarm_fast_port>>:8080 wallarm/fast:<<parameters.wallarm_version>>
+        docker run --name fast-testing --env-file=fast.env -p <<parameters.wallarm_fast_port>>:8080 wallarm/fast:<<parameters.wallarm_fast_version>>
