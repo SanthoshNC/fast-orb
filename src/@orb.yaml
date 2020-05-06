@@ -7,6 +7,8 @@ description: >
   To start using this Orb, you have to setup the WALLARM_API_TOKEN at your project's enviroment variables settings (you get the token at https://us1.my.wallarm.com/nodes).
 
   More on how to use FAST read here: https://docs.fast.wallarm.com/en/.
-  Orb's source code: https://github.com/wallarm/fast-orb.
-  FAST website: https://wallarm.com/products/fast.
+  
+display:
+  source_url: https://github.com/wallarm/fast-orb.
+  home_url: https://wallarm.com/products/fast.
 
